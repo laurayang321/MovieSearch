@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject private var movieListVM = MovieListViewModel()
-    @State private var searchText: String = ""
     
     var body: some View {
         NavigationView {
@@ -58,32 +57,24 @@ struct ContentView: View {
                         }
                     }
                     .listStyle(.plain)
-                    .searchable(text: $searchText, prompt: "Search movies")
-                    .onChange(of: searchText) {
-                        Task {
-                            if !searchText.isEmpty && searchText.count > 3 {
-                                try await movieListVM.getMovies(searchText)
-                            } else {
-                                movieListVM.movies.removeAll()
-                            }
-                        }
-                    }
                     .overlay {
-                        if movieListVM.movies.isEmpty && !searchText.isEmpty {
-                            ContentUnavailableView.search(text: searchText)
+                        if movieListVM.movies.isEmpty && !movieListVM.searchText.isEmpty {
+                            ContentUnavailableView.search(text: movieListVM.searchText)
                         }
-                    }
-                    .navigationTitle("Movies")
-                    .alert(isPresented: $movieListVM.hasError) {
-                        Alert(
-                            title: Text("Error"),
-                            message: Text(movieListVM.error?.errorDescription ?? "Unknown error"),
-                            dismissButton: .default(Text("OK"))
-                        )
                     }
                 }
             }
+            .searchable(text: $movieListVM.searchText, prompt: "Search movies")
+            .navigationTitle("Movies")
+            .alert(isPresented: $movieListVM.hasError) {
+                Alert(
+                    title: Text("Error"),
+                    message: Text(movieListVM.error?.errorDescription ?? "Unknown error"),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
+        .padding()
     }
 }
 

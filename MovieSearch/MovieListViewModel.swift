@@ -16,10 +16,33 @@ class MovieListViewModel: ObservableObject {
     @Published var hasError = false
     @Published var error: MovieError?
     @Published private(set) var isRefreshing = false
+    @Published var searchText: String = ""
     
     @Published var bag = Set<AnyCancellable>()
     
-    func getMovies(_ searchTerm: String) async throws {
+    init() {
+        $searchText
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .sink { [weak self] searchText in
+                self?.search(name: searchText)
+            }
+            .store(in: &bag)
+    }
+    
+    func search(name: String) {
+        guard !name.isEmpty else {
+            self.movies = []
+            return
+        }
+        do {
+            try getMovies(name)
+        } catch {
+            self.hasError = true
+            self.error = MovieError.custom(error: error)
+        }
+    }
+    
+    func getMovies(_ searchTerm: String) throws {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "www.omdbapi.com"
