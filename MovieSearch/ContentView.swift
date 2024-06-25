@@ -49,7 +49,7 @@ struct ContentView: View {
                 }
             }
             .listStyle(.plain)
-            .searchable(text: $searchText, prompt: "Search by movie title")
+            .searchable(text: $searchText, prompt: "Search movies")
             .onChange(of: searchText) {
                 Task {
                     if !searchText.isEmpty && searchText.count > 3 {
