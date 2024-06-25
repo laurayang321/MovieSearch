@@ -11,7 +11,6 @@ import Foundation
 class MovieListViewModel: ObservableObject {
     
     @Published var movies: [MovieViewModel] = []
-    @Published var visibleLabels: [String: Bool] = [:]
     
     func search(name: String) async {
         do {
@@ -20,15 +19,6 @@ class MovieListViewModel: ObservableObject {
         } catch {
             print(error)
         }
-    }
-    
-    func toggleLabelVisibility(for movie: MovieViewModel) {
-        // Reset all labels
-        for key in visibleLabels.keys {
-            visibleLabels[key] = false
-        }
-        // Toggle the specific movie's label
-        visibleLabels[movie.imdbId]?.toggle()
     }
 }
 

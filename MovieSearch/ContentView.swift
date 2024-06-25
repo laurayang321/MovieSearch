@@ -15,7 +15,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List(movieListVM.movies, id: \.imdbId) { movie in
-                HStack {
+                HStack(alignment: .top) {
                     AsyncImage(url: movie.poster, content: { image in
                         image.resizable()
                             .aspectRatio(contentMode: .fit)
@@ -25,20 +25,26 @@ struct ContentView: View {
                     })
                     VStack(alignment: .leading) {
                         Text(movie.title)
+                            .padding(.bottom)
                         Text(movie.year)
-                        HStack {
-                            Button(action: {
-                                movieListVM.toggleLabelVisibility(for: movie)
-                            }) {
-                                Text("Show type")
-                            }
-                            if movieListVM.visibleLabels[movie.imdbId] == true {
-                                Text(movie.type)
-                                    .foregroundColor(.red)
-                            }
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    HStack {
+                        Button(action: {
+                            print("Cell button tapped")
+                        }) {
+                            Text("Buy")
+                                .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                                .foregroundColor(.blue)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .stroke(.blue, lineWidth: 1)
+                                )
+                                
                         }
-                        .padding(8)
-                        .buttonStyle(.borderedProminent)
+                    
                     }
                 }
             }
@@ -50,10 +56,6 @@ struct ContentView: View {
                         await movieListVM.search(name: searchText)
                     } else {
                         movieListVM.movies.removeAll()
-                    }
-                    // Initialize visibility states for new search results
-                    for movie in movieListVM.movies {
-                        movieListVM.visibleLabels[movie.imdbId] = false
                     }
                 }
             }
