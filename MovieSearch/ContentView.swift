@@ -43,7 +43,7 @@ struct ContentView: View {
                 }
             }
             .listStyle(.plain)
-            .searchable(text: $searchText)
+            .searchable(text: $searchText, prompt: "Search by movie title")
             .onChange(of: searchText) {
                 Task {
                     if !searchText.isEmpty && searchText.count > 3 {
@@ -57,9 +57,43 @@ struct ContentView: View {
                     }
                 }
             }
+            .overlay {
+                if movieListVM.movies.isEmpty && !searchText.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
+                }
+            }
             .navigationTitle("Movies")
         }
         .padding()
+    }
+}
+
+struct ContentUnavailableView: View {
+    let searchText: String
+    
+    var body: some View {
+        VStack {
+            Image(systemName: "magnifyingglass")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 80, height: 80)
+                .foregroundColor(.gray)
+                .padding(.bottom, 20)
+            
+            Text("No movies found for the title \"\(searchText)\".")
+                .font(.title2)
+                .padding(.bottom, 10)
+            
+            Text("Please try another title.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .multilineTextAlignment(.center)
+        .padding()
+    }
+    
+    static func search(text: String) -> some View {
+        ContentUnavailableView(searchText: text)
     }
 }
 
