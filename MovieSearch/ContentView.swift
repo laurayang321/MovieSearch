@@ -16,13 +16,20 @@ struct ContentView: View {
         NavigationView {
             List(movieListVM.movies, id: \.imdbId) { movie in
                 HStack(alignment: .top) {
-                    AsyncImage(url: movie.poster, content: { image in
-                        image.resizable()
+                    if let posterURL = movie.poster, posterURL.absoluteString != "N/A" {
+                        AsyncImage(url: movie.poster, content: { image in
+                            image.resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 100)
+                        }, placeholder: {
+                            ProgressView()
+                        })
+                    } else {
+                        Image("defaultPoster")
+                            .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: 100)
-                    }, placeholder: {
-                        ProgressView()
-                    })
+                    }
                     VStack(alignment: .leading) {
                         Text(movie.title)
                             .padding(.bottom)
