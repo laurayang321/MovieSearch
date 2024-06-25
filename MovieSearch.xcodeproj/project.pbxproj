@@ -14,10 +14,8 @@
 		CD70037E2C2A078400684FA0 /* MovieSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD70037D2C2A078400684FA0 /* MovieSearchTests.swift */; };
 		CD7003882C2A078400684FA0 /* MovieSearchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003872C2A078400684FA0 /* MovieSearchUITests.swift */; };
 		CD70038A2C2A078400684FA0 /* MovieSearchUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003892C2A078400684FA0 /* MovieSearchUITestsLaunchTests.swift */; };
-		CD7003972C2A07F000684FA0 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003962C2A07F000684FA0 /* WebService.swift */; };
 		CD7003992C2A081C00684FA0 /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003982C2A081C00684FA0 /* Movie.swift */; };
 		CD70039B2C2A134F00684FA0 /* MovieListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD70039A2C2A134F00684FA0 /* MovieListViewModel.swift */; };
-		CD70039E2C2A1AF100684FA0 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD70039D2C2A1AF100684FA0 /* String+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,11 +46,9 @@
 		CD7003832C2A078400684FA0 /* MovieSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD7003872C2A078400684FA0 /* MovieSearchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSearchUITests.swift; sourceTree = "<group>"; };
 		CD7003892C2A078400684FA0 /* MovieSearchUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSearchUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		CD7003962C2A07F000684FA0 /* WebService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
 		CD7003982C2A081C00684FA0 /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
 		CD70039A2C2A134F00684FA0 /* MovieListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListViewModel.swift; sourceTree = "<group>"; };
 		CD70039C2C2A17BD00684FA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		CD70039D2C2A1AF100684FA0 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,14 +100,12 @@
 			isa = PBXGroup;
 			children = (
 				CD70039C2C2A17BD00684FA0 /* Info.plist */,
-				CD70039D2C2A1AF100684FA0 /* String+Extensions.swift */,
 				CD70036C2C2A078200684FA0 /* MovieSearchApp.swift */,
 				CD70036E2C2A078200684FA0 /* ContentView.swift */,
-				CD7003962C2A07F000684FA0 /* WebService.swift */,
 				CD70039A2C2A134F00684FA0 /* MovieListViewModel.swift */,
+				CD7003982C2A081C00684FA0 /* Movie.swift */,
 				CD7003702C2A078400684FA0 /* Assets.xcassets */,
 				CD7003722C2A078400684FA0 /* Preview Content */,
-				CD7003982C2A081C00684FA0 /* Movie.swift */,
 			);
 			path = MovieSearch;
 			sourceTree = "<group>";
@@ -271,11 +265,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD7003972C2A07F000684FA0 /* WebService.swift in Sources */,
 				CD70036F2C2A078200684FA0 /* ContentView.swift in Sources */,
 				CD7003992C2A081C00684FA0 /* Movie.swift in Sources */,
 				CD70036D2C2A078200684FA0 /* MovieSearchApp.swift in Sources */,
-				CD70039E2C2A1AF100684FA0 /* String+Extensions.swift in Sources */,
 				CD70039B2C2A134F00684FA0 /* MovieListViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
