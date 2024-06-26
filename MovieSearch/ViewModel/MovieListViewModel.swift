@@ -11,56 +11,51 @@ import Combine
 @MainActor
 class MovieListViewModel: ObservableObject {
     
-    @Published var movieResponse: [MovieResponse] = []
     @Published var movies: [MovieViewModel] = []
     @Published var hasError = false
     @Published var error: MovieError?
-    @Published private(set) var isRefreshing = false
+    @Published var isRefreshing = false
     @Published var searchText: String = ""
+    @Published var currentPage = 1
+    @Published var totalResults = 0
+    @Published var isLoadingMore = false
     
     @Published var bag = Set<AnyCancellable>()
     
     init() {
         $searchText
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink { [weak self] searchText in
+                self?.resetSearch()
                 self?.search(name: searchText)
             }
             .store(in: &bag)
     }
     
-    func search(name: String) {
-        guard !name.isEmpty else {
-            self.movies = []
-            return
-        }
-        do {
-            try getMovies(name)
-        } catch {
-            self.hasError = true
-            self.error = MovieError.custom(error: error)
-        }
+    func resetSearch() {
+        currentPage = 1
+        totalResults = 0
+        movies.removeAll()
     }
     
-    func getMovies(_ searchTerm: String) throws {
+    func getMovies(searchTerm: String, page: Int) -> AnyPublisher<MovieResponse, MovieError> {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "www.omdbapi.com"
         components.queryItems = [
             URLQueryItem(name: "apikey", value: "ac4b79a0"),
-            URLQueryItem(name: "s", value: searchTerm)
+            URLQueryItem(name: "s", value: searchTerm),
+            URLQueryItem(name: "page", value: String(page))
         ]
         
         guard let url = components.url else {
-            throw MovieError.badURL
+            return Fail(error: MovieError.badURL).eraseToAnyPublisher()
         }
         
         isRefreshing = true
         hasError = false
         
-        URLSession.shared
-            .dataTaskPublisher(for: url)
-            .receive(on: DispatchQueue.main)
+        return URLSession.shared.dataTaskPublisher(for: url)
             .tryMap { res in
                 guard let response = res.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode <= 300 else {
@@ -68,29 +63,94 @@ class MovieListViewModel: ObservableObject {
                 }
                 
                 let decoder = JSONDecoder()
-                let movieResponse = try? decoder.decode(MovieResponse.self, from: res.data)
-                return movieResponse?.movies ?? []
+                let movieResponse = try decoder.decode(MovieResponse.self, from: res.data)
+                if movieResponse.Response == "False" {
+                    return MovieResponse(movies: [], totalResults: "0", Response: "False", Error: movieResponse.Error)
+                }
+                return movieResponse
             }
+            .mapError { error in
+                if let movieError = error as? MovieError {
+                    return movieError
+                }
+                return MovieError.custom(error: error)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func search(name: String) {
+        guard !name.isEmpty else {
+            self.movies = []
+            return
+        }
+        
+        getMovies(searchTerm: name, page: currentPage)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 defer { self?.isRefreshing = false }
                 
                 switch completion {
                 case .failure(let error):
-                    self?.hasError = true
-                    self?.error = MovieError.custom(error: error)
+                    if let movieError = error as? MovieError, movieError == .noSearchResults {
+                        self?.movies = []
+                    } else {
+                        self?.hasError = true
+                        self?.error = error as? MovieError ?? .custom(error: error)
+                        print("Ensemble Systems Log: \(error)")
+                    }
                 case .finished:
                     break
                 }
-                
-            } receiveValue: { [weak self] movies in
-                self?.movies = movies.map(MovieViewModel.init)
+            } receiveValue: { [weak self] movieResponse in
+                self?.totalResults = Int(movieResponse.totalResults) ?? 0
+                let newMovies = movieResponse.movies.map(MovieViewModel.init)
+                self?.movies.append(contentsOf: newMovies)
             }
             .store(in: &bag)
     }
+    
+    func loadMoreMovies() {
+        guard !searchText.isEmpty, !isLoadingMore, movies.count < totalResults else {
+            return
+        }
+        
+        isLoadingMore = true
+        currentPage += 1
+        
+        getMovies(searchTerm: searchText, page: currentPage)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoadingMore = false
+                
+                switch completion {
+                case .failure(let error):
+                    if let movieError = error as? MovieError, movieError == .noSearchResults {
+                        self?.movies = []
+                    } else {
+                        self?.hasError = true
+                        self?.error = error as? MovieError ?? .custom(error: error)
+                        print("Ensemble Systems Log: \(error)")
+                    }
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] movieResponse in
+                self?.totalResults = Int(movieResponse.totalResults) ?? 0
+                let newMovies = movieResponse.movies.map(MovieViewModel.init)
+                self?.movies.append(contentsOf: newMovies)
+            }
+            .store(in: &bag)
+    }
+
 }
 
-struct MovieViewModel {
+struct MovieViewModel: Identifiable {
+    
     let movie: Movie
+    
+    var id: String {
+        movie.imdbID
+    }
     
     var imdbId: String {
         movie.imdbID
