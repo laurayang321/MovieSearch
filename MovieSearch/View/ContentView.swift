@@ -59,10 +59,13 @@ struct ContentView: View {
                         if movieListVM.isLoadingMore {
                             ProgressView()
                                 .frame(maxWidth: .infinity, alignment: .center)
-                        } else if !movieListVM.searchText.isEmpty && movieListVM.movies.count >= movieListVM.totalResults && !movieListVM.isTyping {
-                            Text("No more results")
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding()
+                        } else if !movieListVM.searchText.isEmpty && movieListVM.movies.count >= movieListVM.totalResults && movieListVM.movies.count != 0 && !movieListVM.isTyping {
+                            Section(header: EmptyView(), footer: EmptyView()) {
+                                Text("No more results")
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding()
+                                    .listRowSeparator(.hidden)
+                            }
                         }
                     }
                     .listStyle(.plain)
