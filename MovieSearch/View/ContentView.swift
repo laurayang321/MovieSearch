@@ -19,20 +19,12 @@ struct ContentView: View {
                 } else {
                     List(movieListVM.movies, id: \.imdbId) { movie in
                         HStack(alignment: .top) {
-                            if let posterURL = movie.poster, posterURL.absoluteString != "N/A" {
-                                AsyncImage(url: movie.poster, content: { image in
-                                    image.resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(maxWidth: 100)
-                                }, placeholder: {
-                                    ProgressView()
-                                })
-                            } else {
-                                Image("defaultPoster")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 100)
-                            }
+                            LazyImage(
+                                url: movie.poster,
+                                placeholder: Image("defaultPoster")
+                            )
+                            .frame(maxWidth: 100)
+                            
                             VStack(alignment: .leading) {
                                 Text(movie.title)
                                     .padding(.bottom)
