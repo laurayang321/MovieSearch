@@ -59,7 +59,7 @@ struct ContentView: View {
                         if movieListVM.isLoadingMore {
                             ProgressView()
                                 .frame(maxWidth: .infinity, alignment: .center)
-                        } else if !movieListVM.searchText.isEmpty && movieListVM.movies.count >= movieListVM.totalResults {
+                        } else if !movieListVM.searchText.isEmpty && movieListVM.movies.count >= movieListVM.totalResults && !movieListVM.isTyping {
                             Text("No more results")
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .padding()
@@ -67,7 +67,7 @@ struct ContentView: View {
                     }
                     .listStyle(.plain)
                     .overlay {
-                        if movieListVM.movies.isEmpty && !movieListVM.searchText.isEmpty {
+                        if movieListVM.movies.isEmpty && !movieListVM.searchText.isEmpty && !movieListVM.isTyping {
                             ContentUnavailableView.search(text: movieListVM.searchText)
                         }
                     }

@@ -19,15 +19,24 @@ class MovieListViewModel: ObservableObject {
     @Published var currentPage = 1
     @Published var totalResults = 0
     @Published var isLoadingMore = false
+    @Published var isTyping = false
     
     @Published var bag = Set<AnyCancellable>()
     
     init() {
         $searchText
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .sink { [weak self] searchText in
+                self?.isTyping = false
                 self?.resetSearch()
                 self?.search(name: searchText)
+            }
+            .store(in: &bag)
+        
+        $searchText
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.isTyping = true
             }
             .store(in: &bag)
     }
@@ -91,12 +100,12 @@ class MovieListViewModel: ObservableObject {
                 
                 switch completion {
                 case .failure(let error):
-                    if let movieError = error as? MovieError, movieError == .noSearchResults {
+                    switch error {
+                    case .noSearchResults:
                         self?.movies = []
-                    } else {
+                    default:
                         self?.hasError = true
-                        self?.error = error as? MovieError ?? .custom(error: error)
-                        print("Ensemble Systems Log: \(error)")
+                        self?.error = error
                     }
                 case .finished:
                     break
@@ -124,12 +133,12 @@ class MovieListViewModel: ObservableObject {
                 
                 switch completion {
                 case .failure(let error):
-                    if let movieError = error as? MovieError, movieError == .noSearchResults {
+                    switch error {
+                    case .noSearchResults:
                         self?.movies = []
-                    } else {
+                    default:
                         self?.hasError = true
-                        self?.error = error as? MovieError ?? .custom(error: error)
-                        print("Ensemble Systems Log: \(error)")
+                        self?.error = error
                     }
                 case .finished:
                     break
