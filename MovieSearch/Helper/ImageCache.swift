@@ -9,15 +9,13 @@ import SwiftUI
 
 class ImageCache {
     static let shared = ImageCache()
-    private init() {}
-
-    private var cache: [URL: UIImage] = [:]
-
-    func getImage(for url: URL) -> UIImage? {
-        return cache[url]
-    }
+    private var cache = NSCache<NSString, UIImage>()
 
     func setImage(_ image: UIImage, for url: URL) {
-        cache[url] = image
+        cache.setObject(image, forKey: url.absoluteString as NSString)
+    }
+
+    func getImage(for url: URL) -> UIImage? {
+        return cache.object(forKey: url.absoluteString as NSString)
     }
 }

@@ -10,43 +10,53 @@ import SwiftUI
 struct LazyImage: View {
     let url: URL?
     let placeholder: Image
-
-    @State private var image: UIImage? = nil
-
+    
+    @State private var loadedImage: UIImage? = nil
+    @State private var isLoading: Bool = true
+    
     var body: some View {
-        if let url = url, let cachedImage = ImageCache.shared.getImage(for: url) {
-            Image(uiImage: cachedImage)
+        if let loadedImage = loadedImage {
+            Image(uiImage: loadedImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-        } else if let url = url {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .onAppear {
-                            if let uiImage = image.asUIImage() {
-                                ImageCache.shared.setImage(uiImage, for: url)
-                            }
-                        }
-                case .failure:
-                    placeholder
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                @unknown default:
-                    placeholder
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+        } else if isLoading {
+            ProgressView()
+                .onAppear {
+                    loadImage()
                 }
-            }
         } else {
             placeholder
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         }
+    }
+    
+    private func loadImage() {
+        guard let url = url, url.absoluteString != "N/A" else {
+            isLoading = false
+            return
+        }
+        
+        if let cachedImage = ImageCache.shared.getImage(for: url) {
+            loadedImage = cachedImage
+            isLoading = false
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    ImageCache.shared.setImage(image, for: url)
+                    self.loadedImage = image
+                    self.isLoading = false
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
+            }
+        }
+        task.resume()
     }
 }
 
