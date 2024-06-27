@@ -48,6 +48,14 @@ class MovieListViewModel: ObservableObject {
     }
     
     func getMovies(searchTerm: String, page: Int) -> AnyPublisher<MovieResponse, MovieError> {
+        let cacheKey = "\(searchTerm)_\(page)"
+                
+        if let cachedResponse = APICache.shared.getResponse(forKey: cacheKey) {
+            return Just(cachedResponse)
+                .setFailureType(to: MovieError.self)
+                .eraseToAnyPublisher()
+        }
+
         var components = URLComponents()
         components.scheme = "https"
         components.host = "www.omdbapi.com"
@@ -76,6 +84,8 @@ class MovieListViewModel: ObservableObject {
                 if movieResponse.Response == "False" {
                     return MovieResponse(movies: [], totalResults: "0", Response: "False", Error: movieResponse.Error)
                 }
+                
+                APICache.shared.setResponse(movieResponse, forKey: cacheKey)
                 return movieResponse
             }
             .mapError { error in

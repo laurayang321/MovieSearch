@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieResponse: Decodable {
+class MovieResponse: Decodable {
     
     let movies: [Movie]
     let totalResults: String
@@ -19,6 +19,13 @@ struct MovieResponse: Decodable {
         case totalResults = "totalResults"
         case Response
         case Error
+    }
+    
+    init(movies: [Movie], totalResults: String, Response: String, Error: String? = nil) {
+        self.movies = movies
+        self.totalResults = totalResults
+        self.Response = Response
+        self.Error = Error
     }
 }
 

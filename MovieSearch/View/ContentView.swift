@@ -40,7 +40,7 @@ struct ContentView: View {
                                     Button(action: {
                                         print("Cell button tapped")
                                     }) {
-                                        Text("Buy")
+                                        Text("Like")
                                             .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                                             .foregroundColor(.blue)
                                             .background(

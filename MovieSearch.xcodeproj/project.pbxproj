@@ -18,6 +18,7 @@
 		CD70039B2C2A134F00684FA0 /* MovieListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD70039A2C2A134F00684FA0 /* MovieListViewModel.swift */; };
 		CD7003A42C2BB13300684FA0 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003A32C2BB13300684FA0 /* ImageCache.swift */; };
 		CD7003A62C2BB1C800684FA0 /* LazyImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003A52C2BB1C800684FA0 /* LazyImage.swift */; };
+		CD7003A82C2D0BBD00684FA0 /* APICache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003A72C2D0BBD00684FA0 /* APICache.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		CD70039C2C2A17BD00684FA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CD7003A32C2BB13300684FA0 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		CD7003A52C2BB1C800684FA0 /* LazyImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyImage.swift; sourceTree = "<group>"; };
+		CD7003A72C2D0BBD00684FA0 /* APICache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICache.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				CD7003A32C2BB13300684FA0 /* ImageCache.swift */,
+				CD7003A72C2D0BBD00684FA0 /* APICache.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -309,6 +312,7 @@
 				CD70036D2C2A078200684FA0 /* MovieSearchApp.swift in Sources */,
 				CD70039B2C2A134F00684FA0 /* MovieListViewModel.swift in Sources */,
 				CD7003A62C2BB1C800684FA0 /* LazyImage.swift in Sources */,
+				CD7003A82C2D0BBD00684FA0 /* APICache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
