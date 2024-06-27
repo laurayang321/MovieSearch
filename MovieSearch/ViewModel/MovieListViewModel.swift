@@ -16,7 +16,7 @@ class MovieListViewModel: ObservableObject {
     @Published var error: MovieError?
     @Published var isRefreshing = false
     @Published var searchText: String = ""
-    @Published var currentPage = 1
+    @Published var currentPage = 1 // each page returns max 10 movies
     @Published var totalResults = 0
     @Published var isLoadingMore = false
     @Published var isTyping = false
@@ -24,8 +24,13 @@ class MovieListViewModel: ObservableObject {
     @Published var bag = Set<AnyCancellable>()
     
     init() {
+        setupBindings()
+    }
+    
+    // Setup bindings to handle search text changes
+    private func setupBindings() {
         $searchText
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink { [weak self] searchText in
                 self?.isTyping = false
                 self?.resetSearch()
@@ -41,37 +46,33 @@ class MovieListViewModel: ObservableObject {
             .store(in: &bag)
     }
     
+    // Reset search results and pagination
     func resetSearch() {
         currentPage = 1
         totalResults = 0
+        isRefreshing = false
         movies.removeAll()
     }
     
+    // Fetch movies from the API, using cache if available
     func getMovies(searchTerm: String, page: Int) -> AnyPublisher<MovieResponse, MovieError> {
         let cacheKey = "\(searchTerm)_\(page)"
                 
+        // Check cache first
         if let cachedResponse = APICache.shared.getResponse(forKey: cacheKey) {
             return Just(cachedResponse)
                 .setFailureType(to: MovieError.self)
                 .eraseToAnyPublisher()
         }
 
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "www.omdbapi.com"
-        components.queryItems = [
-            URLQueryItem(name: "apikey", value: "ac4b79a0"),
-            URLQueryItem(name: "s", value: searchTerm),
-            URLQueryItem(name: "page", value: String(page))
-        ]
-        
-        guard let url = components.url else {
+        guard let url = WebService.buildURL(for: searchTerm, page: page) else {
             return Fail(error: MovieError.badURL).eraseToAnyPublisher()
         }
         
         isRefreshing = true
         hasError = false
         
+        // Fetch data from API
         return URLSession.shared.dataTaskPublisher(for: url)
             .tryMap { res in
                 guard let response = res.response as? HTTPURLResponse,
@@ -85,6 +86,7 @@ class MovieListViewModel: ObservableObject {
                     return MovieResponse(movies: [], totalResults: "0", Response: "False", Error: movieResponse.Error)
                 }
                 
+                // Cache the response
                 APICache.shared.setResponse(movieResponse, forKey: cacheKey)
                 return movieResponse
             }
@@ -97,6 +99,7 @@ class MovieListViewModel: ObservableObject {
             .eraseToAnyPublisher()
     }
     
+    // Search for movies
     func search(name: String) {
         guard !name.isEmpty else {
             self.movies = []
@@ -128,6 +131,7 @@ class MovieListViewModel: ObservableObject {
             .store(in: &bag)
     }
     
+    // Load more movies for pagination
     func loadMoreMovies() {
         guard !searchText.isEmpty, !isLoadingMore, movies.count < totalResults else {
             return

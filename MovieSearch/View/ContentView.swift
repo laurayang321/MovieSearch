@@ -9,6 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     
+    // Constants
+    private let moviesNavigationTitle = "Movies"
+    private let noMoreResultsText = "No more results"
+    private let likeButtonText = "Like"
+    private let defaultPosterImage = "defaultPoster"
+    private let searchFieldPrompt = "Search movies"
+    private let defaultPosterMaxWidth: CGFloat = 100
+    private let likeButtonPadding = EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+    private let likeButtonBackground = RoundedRectangle(cornerRadius: 6)
+        .stroke(.blue, lineWidth: 1)
+    
     @StateObject private var movieListVM = MovieListViewModel()
     @FocusState private var isSearchFieldFocused: Bool
     
@@ -24,9 +35,9 @@ struct ContentView: View {
                             HStack(alignment: .top) {
                                 LazyImage(
                                     url: movie.poster,
-                                    placeholder: Image("defaultPoster")
+                                    placeholder: Image(defaultPosterImage)
                                 )
-                                .frame(maxWidth: 100)
+                                .frame(maxWidth: defaultPosterMaxWidth)
                                 
                                 VStack(alignment: .leading) {
                                     Text(movie.title)
@@ -40,13 +51,10 @@ struct ContentView: View {
                                     Button(action: {
                                         print("Cell button tapped")
                                     }) {
-                                        Text("Like")
-                                            .padding(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
+                                        Text(likeButtonText)
+                                            .padding(likeButtonPadding)
                                             .foregroundColor(.blue)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 6)
-                                                    .stroke(.blue, lineWidth: 1)
-                                            )
+                                            .background(likeButtonBackground)
                                     }
                                 }
                             }
@@ -61,7 +69,7 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else if !movieListVM.searchText.isEmpty && movieListVM.movies.count >= movieListVM.totalResults && movieListVM.movies.count != 0 && !movieListVM.isTyping {
                             Section(header: EmptyView(), footer: EmptyView()) {
-                                Text("No more results")
+                                Text(noMoreResultsText)
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .padding()
                                     .listRowSeparator(.hidden)
@@ -76,14 +84,14 @@ struct ContentView: View {
                     }
                 }
             }
-            .searchable(text: $movieListVM.searchText, prompt: "Search movies")
+            .searchable(text: $movieListVM.searchText, prompt: searchFieldPrompt)
             .focused($isSearchFieldFocused)
             .onChange(of: isSearchFieldFocused) {
                 if !isSearchFieldFocused {
                     movieListVM.resetSearch()
                 }
             }
-            .navigationTitle("Movies")
+            .navigationTitle(moviesNavigationTitle)
 //            .alert(isPresented: $movieListVM.hasError) {
 //                Alert(
 //                    title: Text("Error"),
@@ -93,35 +101,6 @@ struct ContentView: View {
 //            }
         }
         .padding()
-    }
-}
-
-struct ContentUnavailableView: View {
-    let searchText: String
-    
-    var body: some View {
-        VStack {
-            Image(systemName: "magnifyingglass")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 80, height: 80)
-                .foregroundColor(.gray)
-                .padding(.bottom, 20)
-            
-            Text("No movies found for the title \"\(searchText)\".")
-                .font(.title2)
-                .padding(.bottom, 10)
-            
-            Text("Please try another title.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .multilineTextAlignment(.center)
-        .padding()
-    }
-    
-    static func search(text: String) -> some View {
-        ContentUnavailableView(searchText: text)
     }
 }
 
