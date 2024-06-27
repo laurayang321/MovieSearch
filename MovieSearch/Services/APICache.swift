@@ -22,4 +22,8 @@ class APICache {
     func setResponse(_ response: MovieResponse, forKey key: String) {
         cache.setObject(response, forKey: key as NSString)
     }
+    
+    func clear() {
+            cache.removeAllObjects()
+        }
 }

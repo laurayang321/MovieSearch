@@ -12,13 +12,7 @@ struct ContentView: View {
     // Constants
     private let moviesNavigationTitle = "Movies"
     private let noMoreResultsText = "No more results"
-    private let likeButtonText = "Like"
-    private let defaultPosterImage = "defaultPoster"
     private let searchFieldPrompt = "Search movies"
-    private let defaultPosterMaxWidth: CGFloat = 100
-    private let likeButtonPadding = EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
-    private let likeButtonBackground = RoundedRectangle(cornerRadius: 6)
-        .stroke(.blue, lineWidth: 1)
     
     @StateObject private var movieListVM = MovieListViewModel()
     @FocusState private var isSearchFieldFocused: Bool
@@ -32,32 +26,8 @@ struct ContentView: View {
                     List {
                         ForEach(movieListVM.movies.indices, id: \.self) { index in
                             let movie = movieListVM.movies[index]
-                            HStack(alignment: .top) {
-                                LazyImage(
-                                    url: movie.poster,
-                                    placeholder: Image(defaultPosterImage)
-                                )
-                                .frame(maxWidth: defaultPosterMaxWidth)
-                                
-                                VStack(alignment: .leading) {
-                                    Text(movie.title)
-                                        .padding(.bottom)
-                                    Text(movie.year)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                                HStack {
-                                    Button(action: {
-                                        print("Cell button tapped")
-                                    }) {
-                                        Text(likeButtonText)
-                                            .padding(likeButtonPadding)
-                                            .foregroundColor(.blue)
-                                            .background(likeButtonBackground)
-                                    }
-                                }
-                            }
+                            
+                            MovieRowView(movie: movie)
                             .onAppear {
                                 if index == movieListVM.movies.count - 1 {
                                     movieListVM.loadMoreMovies()

@@ -60,12 +60,14 @@ class MovieListViewModel: ObservableObject {
                 
         // Check cache first
         if let cachedResponse = APICache.shared.getResponse(forKey: cacheKey) {
+            print("[MovieSearchApp] Returning cached response for key: \(cacheKey)")
             return Just(cachedResponse)
                 .setFailureType(to: MovieError.self)
                 .eraseToAnyPublisher()
         }
 
         guard let url = WebService.buildURL(for: searchTerm, page: page) else {
+            print("[MovieSearchApp] Invalid URL for searchTerm: \(searchTerm) and page: \(page)")
             return Fail(error: MovieError.badURL).eraseToAnyPublisher()
         }
         
@@ -77,20 +79,24 @@ class MovieListViewModel: ObservableObject {
             .tryMap { res in
                 guard let response = res.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode <= 300 else {
+                    print("[MovieSearchApp] Invalid status code: \(res.response)")
                     throw MovieError.invalidStatusCode
                 }
                 
                 let decoder = JSONDecoder()
                 let movieResponse = try decoder.decode(MovieResponse.self, from: res.data)
                 if movieResponse.Response == "False" {
+                    print("[MovieSearchApp] No search results found for searchTerm: \(searchTerm)")
                     return MovieResponse(movies: [], totalResults: "0", Response: "False", Error: movieResponse.Error)
                 }
                 
                 // Cache the response
+                print("[MovieSearchApp] Successfully fetched movie response: \(movieResponse)")
                 APICache.shared.setResponse(movieResponse, forKey: cacheKey)
                 return movieResponse
             }
             .mapError { error in
+                print("[MovieSearchApp] Error fetching movie response: \(error)")
                 if let movieError = error as? MovieError {
                     return movieError
                 }
@@ -101,6 +107,7 @@ class MovieListViewModel: ObservableObject {
     
     // Search for movies
     func search(name: String) {
+        print("[MovieSearchApp] Search called with name: \(name)") // Debugging statement
         guard !name.isEmpty else {
             self.movies = []
             return
@@ -109,10 +116,12 @@ class MovieListViewModel: ObservableObject {
         getMovies(searchTerm: name, page: currentPage)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
+                print("[MovieSearchApp] Completion: \(completion)")
                 defer { self?.isRefreshing = false }
                 
                 switch completion {
                 case .failure(let error):
+                    print("[MovieSearchApp] Search failed with error: \(error)")
                     switch error {
                     case .noSearchResults:
                         self?.movies = []
@@ -124,9 +133,12 @@ class MovieListViewModel: ObservableObject {
                     break
                 }
             } receiveValue: { [weak self] movieResponse in
+                print("[MovieSearchApp] Received movie response: \(movieResponse)")
                 self?.totalResults = Int(movieResponse.totalResults) ?? 0
                 let newMovies = movieResponse.movies.map(MovieViewModel.init)
                 self?.movies.append(contentsOf: newMovies)
+                print("[MovieSearchApp] Fetched movies: \(newMovies.count)")
+                print("[MovieSearchApp] Movies property updated, total count: \(self?.movies.count ?? 0)")
             }
             .store(in: &bag)
     }
@@ -161,6 +173,8 @@ class MovieListViewModel: ObservableObject {
                 self?.totalResults = Int(movieResponse.totalResults) ?? 0
                 let newMovies = movieResponse.movies.map(MovieViewModel.init)
                 self?.movies.append(contentsOf: newMovies)
+                print("[MovieSearchApp] Loaded more movies: \(newMovies.count)")
+                print("[MovieSearchApp] Movies property updated, total count: \(self?.movies.count ?? 0)")
             }
             .store(in: &bag)
     }

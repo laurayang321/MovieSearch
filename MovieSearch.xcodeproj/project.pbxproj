@@ -22,6 +22,7 @@
 		CD7003AC2C2D163000684FA0 /* MovieResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003AB2C2D163000684FA0 /* MovieResponse.swift */; };
 		CD7003AE2C2D176E00684FA0 /* ContentUnavailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003AD2C2D176E00684FA0 /* ContentUnavailableView.swift */; };
 		CD7003B12C2D184B00684FA0 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003B02C2D184B00684FA0 /* WebService.swift */; };
+		CD7003B32C2DD49B00684FA0 /* MovieRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD7003B22C2DD49B00684FA0 /* MovieRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		CD7003AB2C2D163000684FA0 /* MovieResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieResponse.swift; sourceTree = "<group>"; };
 		CD7003AD2C2D176E00684FA0 /* ContentUnavailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentUnavailableView.swift; sourceTree = "<group>"; };
 		CD7003B02C2D184B00684FA0 /* WebService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
+		CD7003B22C2DD49B00684FA0 /* MovieRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieRowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +157,7 @@
 				CD70036E2C2A078200684FA0 /* ContentView.swift */,
 				CD7003AD2C2D176E00684FA0 /* ContentUnavailableView.swift */,
 				CD7003A52C2BB1C800684FA0 /* LazyImage.swift */,
+				CD7003B22C2DD49B00684FA0 /* MovieRowView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -330,6 +333,7 @@
 				CD7003AE2C2D176E00684FA0 /* ContentUnavailableView.swift in Sources */,
 				CD7003AA2C2D15F600684FA0 /* MovieError.swift in Sources */,
 				CD7003AC2C2D163000684FA0 /* MovieResponse.swift in Sources */,
+				CD7003B32C2DD49B00684FA0 /* MovieRowView.swift in Sources */,
 				CD7003A62C2BB1C800684FA0 /* LazyImage.swift in Sources */,
 				CD7003B12C2D184B00684FA0 /* WebService.swift in Sources */,
 				CD7003A82C2D0BBD00684FA0 /* APICache.swift in Sources */,
